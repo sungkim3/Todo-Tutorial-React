@@ -1,3 +1,35 @@
+## Tutorial Implementation: Experience and Impressions
+Implementation of React using the [Facebook Tutorial](https://reactjs.org/tutorial/tutorial.html#lifting-state-up) and repository as guides.
+
+Implemented the additional suggested challenges. These include displaying coordinates of latest move, highlighting selected move on game board, sorting move list in descending or ascending order, rewriting board minimizing hardcoded html, highlighting the winning squares, and indicating a draw.
+
+This was a fun and effective program to learn React off of. I felt like it was really important to do the challenge suggestions because they hammer down how states change and how you have to account for that effectively and efficiently. Learning how to connect events to component states was a very rewarding process through this demo. Wrapping my mind around the concept of undo/history and immutable objects was also equally intriguing.
+
+# Challenges:
+The most challenging aspect to the tutorial was understanding changing state when little pieces of the game were being interacted with. This was most exemplified by the highlighting challenges. 
+
+What got me through was ensuring that the Game component was in charge of all the Square component's properties. After establishing this rule, I worked on passing down that state as properties to the Square component. Eventually it was about making sure all areas that change the state of the game were 
+1) concerned with only what they should be...e.g. highlighting should only worry about the className state and 
+2) that those changed states were placed within the correct index of the history array (due to the sorting feature)
+
+# Areas to improve:
+Sorting implementation I feel could be optimized better. Rather than sorting the game's state of history (causing me to worry about indices in areas I did not anticipate), it may have been easier to work with a copy of the game's history within the Game's render function and map that into the list elements instead with modified values depending on the sorting direction.
+
+I feel I could also refactor Board better by turning it into a stateless Component and moving the render rows logic into Game instead. Then simply pass props into Board and return {props.rows}.
+
+Probably didn't need stepNumber property in two places for the Game's state.
+
+Clean up render() in Game.
+
+# Next Steps:
+https://reactjs.org/docs/optimizing-performance.html#examples
+https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+adding style framework like bootstrap or material ui
+
+
+-------------------------------------
+## React Boiler Plate Available Below
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
