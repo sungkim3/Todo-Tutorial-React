@@ -42,7 +42,7 @@ class Game extends React.Component {
             history: [{
                 squares: Array(9).fill({
                     value: null,
-                    className: 'unhighlighted'
+                    className: 'unhighlighted',
                 }),
                 index: null,
                 stepNumber: 0
@@ -54,14 +54,13 @@ class Game extends React.Component {
     }
 
     handleClick(i) {
-        console.log(i);
         const xOption = {
             value: 'X',
-            className: 'unhighlighted'
+            className: 'unhighlighted',
         }
         const oOption = {
             value: 'O',
-            className: 'unhighlighted'
+            className: 'unhighlighted',
         }
 
         let history = this.state.history.slice(0, this.state.stepNumber + 1);
@@ -113,16 +112,22 @@ class Game extends React.Component {
     }
 
     jumpTo(step) {
-        // method to reset state when jumping to a move
-        // step is the move number, 0 means no moves have been made yet
         let history;
+        let current;
         if (!step) {
             step = 0;
         }
         if (this.state.ascending){
             history = this.state.history.slice(0, step + 1);
+            current = history[history.length - 1];
         } else {
             history = this.state.history.slice(this.state.history.length - (step + 1), this.state.history.length);
+            current = history[0];
+        }
+
+        const squares = current.squares.slice();
+        for (var i=0; i<squares.length; i++){
+            squares[i].className = 'unhighlighted';
         }
 
         this.setState({
@@ -171,19 +176,14 @@ class Game extends React.Component {
     render() {
         console.log('render game');
         const history = this.state.history;
-        console.log(history);
         const ascending = this.state.ascending;
-
         let current;
         if (ascending) {
             current = history[history.length - 1];
         } else {
             current = history[0];
         }
-        console.log(current);
-        const winner = calculateWinner(current.squares);
-        const rows = 3;
-
+        
         const moves = history.map((step, move) => {
             const index = step.index;
             let col = (index % 3 + 1);
@@ -200,6 +200,7 @@ class Game extends React.Component {
             );
         });
 
+        const winner = calculateWinner(current.squares);
         let status;
         if (winner) {
             status = 'Winner: ' + winner;
@@ -214,6 +215,7 @@ class Game extends React.Component {
             sortStatus = 'Descending';
         }
 
+        const rows = 3;
         return (
         <div className="game">
             <div className="game-board">
@@ -250,6 +252,9 @@ function calculateWinner(squares) {
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
         if (squares[a].value && squares[a].value === squares[b].value && squares[a].value === squares[c].value) {
+            squares[a].className = 'highlighted';
+            squares[b].className = 'highlighted';
+            squares[c].className = 'highlighted';
             return squares[a].value;
         }
     }
