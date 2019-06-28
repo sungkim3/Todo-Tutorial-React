@@ -4,7 +4,7 @@ import './index.css';
 
 function Square(props) {
     return (
-        <button style={props.styles} className="square" onClick={props.onClick}>
+        <button className={`square ${ props.className }`} onClick={props.onClick}>
             {props.value}
         </button>
     );
@@ -18,7 +18,7 @@ class Board extends React.Component {
             for (var x=0; x < this.props.rows; x++) {
                 const index = x + (3 * i);
                 const square = this.props.squares[index];
-                squares.push(<Square key={index} styles={square.backgroundColor} value={square.value} onClick={() => this.props.onClick(index)} />)
+                squares.push(<Square key={index} className={square.className} value={square.value} onClick={() => this.props.onClick(index)} />)
             }
             rows.push(
                 <div key={i} className="board-row">
@@ -41,47 +41,90 @@ class Game extends React.Component {
         this.state = {
             history: [{
                 squares: Array(9).fill({
-                    backgroundColor: { backgroundColor: 'white' },
-                    value: null
+                    value: null,
+                    className: 'unhighlighted'
                 }),
                 index: null,
+                stepNumber: 0
             }],
             stepNumber: 0,
-            xIsNext: true
+            xIsNext: true,
+            ascending: true,
         }
     }
 
     handleClick(i) {
-        const history = this.state.history.slice(0, this.state.stepNumber + 1);
-        const current = history[history.length - 1];
+        console.log(i);
+        const xOption = {
+            value: 'X',
+            className: 'unhighlighted'
+        }
+        const oOption = {
+            value: 'O',
+            className: 'unhighlighted'
+        }
+
+        let history = this.state.history.slice(0, this.state.stepNumber + 1);
+        let current;
+        if (this.state.ascending) {
+            current = history[history.length - 1];
+        } else {
+            current = history[0];
+        }
         const squares = current.squares.slice();
         if (calculateWinner(squares) || squares[i].value) {
             return;
         }
-        const xOption = {
-            backgroundColor: { backgroundColor: 'white' },
-            value: 'X'
-        }
-        const oOption = {
-            backgroundColor: { backgroundColor: 'white' },
-            value: 'O'
-        }
         squares[i] = this.state.xIsNext ?  xOption : oOption;
-        this.setState({
-            history: history.concat([{
+
+        if (this.state.ascending) {
+            history = history.concat([{
                 squares: squares,
                 index: i,
-            }]),
+                stepNumber: history.length
+            }])
+        } else {
+            history = [{
+                squares: squares,
+                index: i,
+                stepNumber: history.length
+            }].concat(history);
+        }
+
+        this.setState({
+            history: history,
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
-            
         });
+
+    }
+
+    handleSort() {
+        let history = this.state.history.slice();
+        if (this.state.ascending) {
+            history = history.sort((a, b) => (a.stepNumber < b.stepNumber) ? 1: ((b.stepNumber > a.stepNumber) ? -1 : 0))
+        } else {
+            history = history.sort((a, b) => (b.stepNumber < a.stepNumber) ? 1: ((a.stepNumber > b.stepNumber) ? -1 : 0))
+        }
+        this.setState({
+            history: history,
+            ascending: !this.state.ascending
+        })
     }
 
     jumpTo(step) {
         // method to reset state when jumping to a move
         // step is the move number, 0 means no moves have been made yet
-        const history = this.state.history.slice(0, step + 1);
+        let history;
+        if (!step) {
+            step = 0;
+        }
+        if (this.state.ascending){
+            history = this.state.history.slice(0, step + 1);
+        } else {
+            history = this.state.history.slice(this.state.history.length - (step + 1), this.state.history.length);
+        }
+
         this.setState({
             stepNumber: step,
             xIsNext: (step % 2) === 0,
@@ -90,15 +133,17 @@ class Game extends React.Component {
     }
 
     highlightSquare(index) {
-        if (index > 0){
-            let history = this.state.history.slice();
-            const current = history[history.length - 1];
-            const squares = current.squares.slice();
-            const newColor = { backgroundColor: 'red' };
-            squares[index].backgroundColor = newColor;
-
-            history[history.length - 1].squares = squares;
-            
+        let history = this.state.history.slice();
+        let current;
+        if (this.state.ascending) {
+            current = history[history.length - 1];
+        } else {
+            current = history[0];
+        }
+        if (index !== null) {
+            let squares = current.squares;
+            squares[index].className = 'highlighted';
+                        
             this.setState({
                 history: history,
             });
@@ -106,37 +151,48 @@ class Game extends React.Component {
     }
 
     unHighlightSquare(index) {
-        if (index > 0){
-            let history = this.state.history.slice();
-            const current = history[history.length - 1];
-            const squares = current.squares.slice();
-            const newColor = { backgroundColor: 'white' };
-            squares[index].backgroundColor = newColor;
-
-            history[history.length - 1].squares = squares;
+        let history = this.state.history.slice();
+        let current 
+        if (this.state.ascending) {
+            current = history[history.length - 1];
+        } else {
+            current = history[0];
+        }
+        if (index !== null) {
+            const squares = current.squares;
+            squares[index].className = 'unhighlighted';
             
             this.setState({
                 history: history,
             });
         }
-
     }
 
     render() {
         console.log('render game');
         const history = this.state.history;
-        const current = history[this.state.stepNumber];
+        console.log(history);
+        const ascending = this.state.ascending;
+
+        let current;
+        if (ascending) {
+            current = history[history.length - 1];
+        } else {
+            current = history[0];
+        }
+        console.log(current);
         const winner = calculateWinner(current.squares);
         const rows = 3;
+
         const moves = history.map((step, move) => {
             const index = step.index;
             let col = (index % 3 + 1);
             let row = Math.floor(((index / 3) + 1));
-            const desc = move ? 'Go to move #' + move + ' Coord: ('+col+','+row+')' : 'Go to game start';
+            const desc = step.stepNumber ? 'Go to move #' + step.stepNumber + ' Coord: ('+col+','+row+')' : 'Go to game start';
             return (
                 <li key={move}>
                     <button 
-                    onClick={() => this.jumpTo(move)}
+                    onClick={() => this.jumpTo(step.stepNumber)}
                     onMouseEnter={() => this.highlightSquare(step.index)}
                     onMouseLeave={() => this.unHighlightSquare(step.index)}
                     >{desc}</button>
@@ -151,6 +207,13 @@ class Game extends React.Component {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
 
+        let sortStatus;
+        if (ascending) {
+            sortStatus = 'Ascending';
+        } else {
+            sortStatus = 'Descending';
+        }
+
         return (
         <div className="game">
             <div className="game-board">
@@ -158,6 +221,7 @@ class Game extends React.Component {
             </div>
             <div className="game-info">
             <div>{status}</div>
+            <button onClick={() => this.handleSort()}>{sortStatus}</button>
             <ol>{moves}</ol>
             </div>
         </div>

@@ -16,6 +16,10 @@ body {
   .status {
     margin-bottom: 10px;
   }
+
+  .square.highlighted {
+      background: red;
+  }
   
   .square {
     background: #fff;
@@ -31,6 +35,8 @@ body {
     text-align: center;
     width: 34px;
   }
+
+  
   
   .square:focus {
     outline: none;
