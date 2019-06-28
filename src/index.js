@@ -88,16 +88,7 @@ class Game extends React.Component {
     jumpTo(step, index) {
         // method to reset state when jumping to a move
         // step is the move number, 0 means no moves have been made yet
-        console.log('jumping...');
-        console.log(step);
-        console.log(index);
         const history = this.state.history.slice(0, step + 1);
-        console.log(history);
-        // const current = history[history.length - 1];
-        // console.log(current);
-        // const squares = current.squares.slice();
-        // history[history.length - 1].squares = squares;
-
         this.setState({
             stepNumber: step,
             xIsNext: (step % 2) === 0,
@@ -106,39 +97,41 @@ class Game extends React.Component {
     }
 
     highlightSquare(index) {
-        let history = this.state.history.slice();
-        const current = history[history.length - 1];
-        const squares = current.squares.slice();
-        const newColor = { backgroundColor: 'red' };
-        squares[index].backgroundColor = newColor;
+        if (index > 0){
+            let history = this.state.history.slice();
+            const current = history[history.length - 1];
+            const squares = current.squares.slice();
+            const newColor = { backgroundColor: 'red' };
+            squares[index].backgroundColor = newColor;
 
-        history[history.length - 1].squares = squares;
-        
-        this.setState({
-            history: history,
-        });
-
+            history[history.length - 1].squares = squares;
+            
+            this.setState({
+                history: history,
+            });
+        }
     }
 
     unHighlightSquare(index) {
-        let history = this.state.history.slice();
-        const current = history[history.length - 1];
-        const squares = current.squares.slice();
-        const newColor = { backgroundColor: 'white' };
-        squares[index].backgroundColor = newColor;
+        if (index > 0){
+            let history = this.state.history.slice();
+            const current = history[history.length - 1];
+            const squares = current.squares.slice();
+            const newColor = { backgroundColor: 'white' };
+            squares[index].backgroundColor = newColor;
 
-        history[history.length - 1].squares = squares;
-        
-        this.setState({
-            history: history,
-        });
+            history[history.length - 1].squares = squares;
+            
+            this.setState({
+                history: history,
+            });
+        }
 
     }
 
     render() {
         console.log('render game');
         const history = this.state.history;
-        console.log(history);
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
         const moves = history.map((step, move) => {
