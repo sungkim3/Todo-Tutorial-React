@@ -61,9 +61,6 @@ class Game extends React.Component {
             return;
         }
         squares[i] = this.state.xIsNext ? 'X' : 'O';
-
-        console.log(i);
-        console.log(history.length);
         this.setState({
             history: history.concat([{
                 squares: squares,
@@ -87,21 +84,11 @@ class Game extends React.Component {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
-        console.log('game rendered');
-
-        const index = current.index;
-        let col = (index % 3 + 1);
-        let row = Math.floor(((index / 3) + 1));
-
         const moves = history.map((step, move) => {
-            // step is board object with squares array logging moves
-            // move is the index of the history array
+            const index = step.index;
+            let col = (index % 3 + 1);
+            let row = Math.floor(((index / 3) + 1));
             const desc = move ? 'Go to move #' + move + ' Coord: ('+col+','+row+')' : 'Go to game start';
-            // need to know board before the move moving to to know the board that was moved to
-            console.log(step);
-            // previous
-            // current
-            // find difference by index, pass forward to set
             return (
                 <li key={move}>
                     <button onClick={() => this.jumpTo(move, index)}>{desc}</button>
