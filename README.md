@@ -3,7 +3,9 @@ Implementation of React using the [Facebook Tutorial](https://reactjs.org/tutori
 
 Implemented the additional suggested challenges. These include displaying coordinates of latest move, highlighting selected move on game board, sorting move list in descending or ascending order, rewriting board minimizing hardcoded html, highlighting the winning squares, and indicating a draw.
 
-This was a fun and effective program to learn React off of. I felt like it was really important to do the challenge suggestions because they hammer down how states change and how you have to account for that effectively and efficiently. Learning how to connect events to component states was a very rewarding process through this demo. Wrapping my mind around the concept of undo/history and immutable objects was also equally intriguing.
+This was a fun and effective program to learn React off of. It felt like it was really important to do the challenge suggestions because they seemed to hammer down how states change and how you have to account for that effectively and efficiently. 
+
+Learning how to connect events to component states was a very rewarding process through this demo. Wrapping my mind around the concept of undo/history and immutable objects was also equally intriguing.
 
 ## Challenges:
 The most challenging aspect to the tutorial was understanding changing state when little pieces of the game were being interacted with. This was most exemplified by the highlighting challenges. 
